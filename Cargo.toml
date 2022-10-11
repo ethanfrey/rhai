@@ -42,8 +42,9 @@ serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 [features]
 default = ["std"]
 # ideally, we could make cargo choose between std and wasm-std based on the target
-std = ["ahash/std", "ahash/runtime-rng", "num-traits/std", "smartstring/std"]
-wasm-std = ["ahash/std", "ahash/compile-time-rng", "num-traits/std", "smartstring/std"]
+#std = ["ahash/std", "ahash/runtime-rng", "num-traits/std", "smartstring/std"]
+std = ["ahash/std", "ahash/compile-time-rng", "num-traits/std", "smartstring/std"]
+rng = []                        # pulls in target-specific RNG library (see below)
 unchecked = []                  # unchecked arithmetic
 sync = []                       # restrict to only types that implement Send + Sync
 no_position = []                # do not track position in the parser
@@ -74,6 +75,10 @@ stdweb = ["instant/stdweb"]
 
 # compiling bin tools
 bin-features = ["decimal", "metadata", "serde", "debugging", "rustyline"]
+
+# choose rng based on target and arch
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+ahash = { version = "0.8", default-features = false, features = ["runtime-rng"] }
 
 [[bin]]
 name = "rhai-repl"
